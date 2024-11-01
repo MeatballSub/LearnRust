@@ -1,6 +1,7 @@
 #![allow(unused)]
 use std::cmp::Ordering;
 use std::fmt::Debug;
+use std::fmt::Display;
 use std::fmt::{self};
 use std::hash::Hash;
 use std::hash::Hasher;
@@ -114,17 +115,82 @@ impl<T> LinkedList<T>
     }
 
     pub fn insert_sorted(&mut self, elem: T)
+        where T: Display + PartialOrd
     {
-        // Add code here
-        // search through the already existing list(self)
-        // find the correct insertion point
-        // move the pointers around so the structure is correct
-        //
-        // insert 2 into list 1 <--> 3
-        // result 1 <--> 2 <--> 3
-        // note <--> denotes a pair of links one going each way
-        // so detatch --> from 1 to 3, and re-link 1 --> 2
-        // simmilar with 1 <-- 3 moves to 2 <-- 3
+        // SAFETY: it's a linked-list, what do you want?
+        unsafe {
+            if let (Some(front_node), Some(back_node)) = (self.front, self.back)
+            {
+                // List is not empty
+                if elem <= (*front_node.as_ptr()).elem
+                {
+                    // belongs at front
+                    // Put the new front before the old one
+                    let new =
+                        NonNull::new_unchecked(Box::into_raw(Box::new(Node { front: None,
+                                                                             back:
+                                                                                 Some(front_node),
+                                                                             elem })));
+
+                    (*front_node.as_ptr()).front = Some(new);
+                    self.front = Some(new);
+                    self.len += 1;
+                }
+                else if elem >= (*back_node.as_ptr()).elem
+                {
+                    // Put the new back before the old one
+                    let new =
+                        NonNull::new_unchecked(Box::into_raw(Box::new(Node { front:
+                                                                                 Some(back_node),
+                                                                             back: None,
+                                                                             elem })));
+
+                    (*back_node.as_ptr()).back = Some(new);
+                    self.back = Some(new);
+                    self.len += 1;
+                }
+                else
+                {
+                    // belongs in the middle somewhere
+                    // not empty, so it's safe to unwrap front
+                    let mut cur_node = (*self.front.unwrap().as_ptr()).back;
+                    while let Some(cur) = cur_node
+                    {
+                        if elem <= (*cur.as_ptr()).elem
+                        {
+                            // found the place for insertion
+                            // we know we're in the middle of the list somewhere so it's safe to
+                            // unwrap the cur_node's front
+                            // it will always be a Some(_)
+                            let prev_node = (*cur.as_ptr()).front.unwrap();
+                            // prev_node <--> new <--> cur_node
+                            let new =
+                            NonNull::new_unchecked(Box::into_raw(Box::new(Node { front: Some(prev_node),
+                                                                                 back: Some(cur),
+                                                                                 elem })));
+
+                            (*prev_node.as_ptr()).back = Some(new);
+                            (*cur.as_ptr()).front = Some(new);
+                            self.len += 1;
+
+                            break;
+                        }
+                        cur_node = (*cur.as_ptr()).back;
+                    }
+                }
+            }
+            else
+            {
+                // If there's no front, then we're the empty list and need
+                // to make a list with only 1 item, the one being inserted
+                let new = NonNull::new_unchecked(Box::into_raw(Box::new(Node { front: None,
+                                                                               back: None,
+                                                                               elem })));
+                self.back = Some(new);
+                self.front = Some(new);
+                self.len = 1;
+            }
+        }
     }
 
     pub fn pop_front(&mut self) -> Option<T>
