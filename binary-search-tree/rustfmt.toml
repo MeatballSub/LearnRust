@@ -7,3 +7,5 @@ wrap_comments = true
 indent_style = "Visual"
 fn_single_line = true
 control_brace_style = "AlwaysNextLine"
+single_line_if_else_max_width = 120
+struct_lit_width = 120
