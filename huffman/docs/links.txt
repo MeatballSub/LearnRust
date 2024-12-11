@@ -1,0 +1,4 @@
+https://en.wikipedia.org/wiki/Huffman_coding
+https://www.geeksforgeeks.org/huffman-coding-greedy-algo-3/#
+https://www.cs.utexas.edu/~scottm/cs314/Assignments/A10_Huffman.html
+https://youtu.be/co4_ahEDCho?si=ttvW1lEgsL_3i6yg

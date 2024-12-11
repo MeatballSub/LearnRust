@@ -1,0 +1,3 @@
+We're going to be implementing Huffman coding for compression & decompression of files.  Provided are a set of readers and writers for files that should give you a simple interface for reading/writing at the bit or byte level.
+
+TODO: put together a slide deck that covers all of the techniques, none of the links I've found go over how to efficiently write out the coding tree for decompression.  Some of them talk about the overhead(even attempt to calculated it, though they do it wrong).
