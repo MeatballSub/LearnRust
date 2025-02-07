@@ -81,7 +81,7 @@ impl UsizeTree
             let new = Some(NonNull::new_unchecked(Box::into_raw(Box::new(new_node))));
             *insert_link = new;
             self.len += 1;
-            return true;
+            true
         }
     }
 
@@ -116,7 +116,7 @@ impl UsizeTree
                 else
                 {
                     let mut successor_link = &mut remove_node.right;
-                    while let Some(_) = (*successor_link.unwrap().as_ptr()).left
+                    while (*successor_link.unwrap().as_ptr()).left.is_some()
                     {
                         successor_link = &mut (*successor_link.unwrap().as_ptr()).left;
                     }
@@ -132,7 +132,7 @@ impl UsizeTree
                 return true;
             }
 
-            return false;
+            false
         }
     }
 
@@ -150,33 +150,9 @@ impl UsizeTree
     }
 }
 
-impl Drop for UsizeNode
-{
-    fn drop(&mut self)
-    {
-        println!("dropping: {:?}", self);
-    }
-}
-
 impl Drop for UsizeTree
 {
     fn drop(&mut self) { self.clear(); }
-}
-
-impl Clone for UsizeTree
-{
-    fn clone(&self) -> Self
-    {
-        todo!();
-    }
-}
-
-impl Debug for UsizeTree
-{
-    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result
-    {
-        todo!();
-    }
 }
 
 #[cfg(test)]
